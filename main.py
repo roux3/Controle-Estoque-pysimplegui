@@ -4,10 +4,7 @@ import base64
 
 
 def AdicionarItem():
-    with open("logo.ico", "rb") as f:
-        my_icon = base64.b64encode(f.read())
-    sg.set_options(icon=my_icon)
-
+    
   
         
             
@@ -92,4 +89,3 @@ def AdicionarItem():
             
             window.close()
 
-AdicionarItem()
