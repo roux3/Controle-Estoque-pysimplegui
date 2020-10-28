@@ -62,7 +62,7 @@ def JanelaVenda():
     sg.change_look_and_feel('DarkGreen')
     
     
-    Nome = criaBanco.read_task()
+    Nome = criaBanco.read_task0()
 
     vlayout = [
         [sg.Text('Selecione o item que deseja fazer a venda')],
@@ -86,7 +86,7 @@ def JanelaVenda():
                     subtration = Vquantidade - QuantiTrat
                     q = subtration
                     criaBanco.vender(q, v)
-                    Nome = criaBanco.read_task()
+                    Nome = criaBanco.read_task0()
                     window.find_element('-BOX-').Update(Nome)
         except IndexError as erro:
             print('Erro')

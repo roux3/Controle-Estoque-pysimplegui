@@ -22,7 +22,12 @@ def delete(x):
     cursor.execute('''delete from produtos where Nome = ?''', (x,))
     dbestoque.commit
 
-
+def read_task0():
+    cursor = dbestoque.cursor()
+    cursor.execute('''SELECT * from produtos''')
+    data = cursor.fetchall()
+    dbestoque.commit()
+    return data
 def read_task():
     cursor = dbestoque.cursor()
     cursor.execute('''SELECT Nome from produtos''')
