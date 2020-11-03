@@ -60,6 +60,11 @@ def vender(q, c):
     cursor.execute('''update produtos set Quantidade =? where Nome=?''', (q, c))
     dbestoque.commit()
 
+def Editar(p, c):
+    cursor.execute('''update produtos set Preco =? where Nome=?''', (p, c))
+    dbestoque.commit()
+
+
 
 def busca0(c):
     cursor.execute('''SELECT Id from produtos where Nome = ?''',(c,))
@@ -204,6 +209,17 @@ with open("logo.ico", "rb") as f:
     sg.set_options(icon=my_icon)
 
 
+def JanelaEdit():
+    sg.change_look_and_feel('DarkGreen')
+    elayout = [
+        [sg.Text('Digite o novo Preço:'),sg.Input(key='edit_item')],
+        [sg.Button('Enviar')]
+              ]
+    window = sg.Window('Novo Preço',elayout)
+    button, values = window.read()
+    global edit
+    edit = values['edit_item']
+    window.close()
 
         
 
@@ -223,7 +239,7 @@ def JanelaVenda():
         sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
         sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
-        [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Text('                      '),sg.Button('Deletar')],
+        [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text('        '),sg.Button('Editar')],
         [sg.Button('Sair')]
     ]
 
@@ -275,7 +291,18 @@ def JanelaVenda():
                 window.find_element('-BOX-').Update(Nome)
                 window.find_element('-BOX2-').Update(Quantidade)
                 window.find_element('-BOX3-').Update(Preco)
-                
+        
+        if button == 'Editar':
+            if Nome:
+                x = values['-BOX-'][0]
+                y = (x[0])
+                JanelaEdit()
+                p = edit
+                c = y
+                Editar(p, c)
+                Preco = busca3(c)
+                window.find_element('-BOX3-').Update(Preco)
+
         
            
 
