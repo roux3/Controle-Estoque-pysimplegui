@@ -57,7 +57,7 @@ def read_task3():
 
 
 def vender(q, c):
-    cursor.execute('''update produtos set Quantidade =? where Nome=?''', (q, c))
+    cursor.execute('''update produtos set Quantidade =? where Nome LIKE ?''', (q,'%'+c+'%',))
     dbestoque.commit()
 
 def Editar(p, c):
@@ -67,25 +67,25 @@ def Editar(p, c):
 
 
 def busca0(c):
-    cursor.execute('''SELECT Id from produtos where Nome = ?''',(c,))
+    cursor.execute('''SELECT Id from produtos where Nome LIKE ?''',('%'+c+'%',))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
 
 def busca1(c):
-    cursor.execute('''SELECT Nome from produtos where Nome = ?''',(c,))
+    cursor.execute('''SELECT Nome from produtos WHERE Nome LIKE ? ''',('%'+c+'%',))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
 
 def busca2(c):
-    cursor.execute('''SELECT Quantidade from produtos where Nome = ?''',(c,))
+    cursor.execute('''SELECT Quantidade from produtos where Nome LIKE ?''',('%'+c+'%',))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
 
 def busca3(c):
-    cursor.execute('''SELECT Preco from produtos where Nome = ?''',(c,))
+    cursor.execute('''SELECT Preco from produtos where Nome LIKE ?''',('%'+c+'%',))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
@@ -239,7 +239,7 @@ def JanelaVenda():
         sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
         sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
-        [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text('        '),sg.Button('Editar')],
+        [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text('        '),sg.Button('Editar'),sg.Button('Add estoque')],
         [sg.Button('Sair')]
     ]
 
@@ -257,27 +257,38 @@ def JanelaVenda():
             window.find_element('-BOX-').Update(Nome)
             window.find_element('-BOX2-').Update(Quantidade)
             window.find_element('-BOX3-').Update(Preco)
-    
-        if button == 'Realizar venda':
-            if Nome:
-                Avenda()
-                QuantiTrat = int(Quanti)
-                Quantidade = busca2(c)
-                Vquantidade0 = (Quantidade[0])
-                Vquantidade = (Vquantidade0[0])
-                print(Vquantidade)
-                subtration = Vquantidade - QuantiTrat
-                q = subtration
-                vender(q, c)
-                Nome = read_task()
-                Quantidade = read_task1()
-                Preco = read_task2()
-                Id = read_task3()
-                window.find_element('-BOX0-').Update(Id)
-                window.find_element('-BOX-').Update(Nome)
-                window.find_element('-BOX2-').Update(Quantidade)
-                window.find_element('-BOX3-').Update(Preco)
-        
+        try:
+            if button == 'Realizar venda':
+                if Nome:
+                    Avenda()
+                    QuantiTrat = int(Quanti)
+                    Quantidade = busca2(c)
+                    Vquantidade0 = (Quantidade[0])
+                    Vquantidade = (Vquantidade0[0])
+                    subtration = Vquantidade - QuantiTrat
+                    q = subtration
+                    vender(q, c)
+                    Quantidade = busca2(c)
+                    window.find_element('-BOX2-').Update(Quantidade)
+                    
+            if button == 'Add estoque':
+                if Nome:
+                    Avenda()
+                    QuantiTrat = int(Quanti)
+                    Quantidade = busca2(c)
+                    Vquantidade0 = (Quantidade[0])
+                    Vquantidade = (Vquantidade0[0])
+                    addition = Vquantidade + QuantiTrat
+                    q = addition
+                    vender(q, c)
+                    Quantidade = busca2(c)
+                    window.find_element('-BOX2-').Update(Quantidade)
+        except ValueError:
+            print('erro')
+                
+
+
+
         if button == 'Deletar':
             if Nome:
                 y = values['-BOX-'][0]
@@ -433,4 +444,4 @@ if button == 'Fazer uma filtragem':
     window.close()
     Filtrar()
 if button == 'Sair':
-    window.exit()
+    window.close()
