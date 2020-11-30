@@ -56,12 +56,16 @@ def read_task3():
     return data3
 
 
-def vender(q, c):
-    cursor.execute('''update produtos set Quantidade =? where Nome LIKE ?''', (q,'%'+c+'%',))
+def vender(q, h):
+    cursor.execute('''update produtos set Quantidade =? where Nome= ?''', (q,h,))
     dbestoque.commit()
 
-def Editar(p, c):
-    cursor.execute('''update produtos set Preco =? where Nome=?''', (p, c))
+def add_estoque(add_q, h):
+    cursor.execute('''update produtos set Quantidade =? where Nome= ?''', (add_q,h,))
+    dbestoque.commit()
+
+def Editar(p, h):
+    cursor.execute('''update produtos set Preco =? where Nome=?''', (p, h))
     dbestoque.commit()
 
 
@@ -80,6 +84,12 @@ def busca1(c):
 
 def busca2(c):
     cursor.execute('''SELECT Quantidade from produtos where Nome LIKE ?''',('%'+c+'%',))
+    resultado = cursor.fetchall()
+    dbestoque.commit()
+    return resultado
+
+def busca2_teste(y):
+    cursor.execute('''SELECT Quantidade from produtos where Nome=?''',(y,))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
@@ -143,17 +153,17 @@ def AdicionarItem():
         sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
         sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
-        [sg.Button('Deletar')],
+        [sg.Button('Deletar'),sg.Button('Voltar')],
         [sg.Button('Sair')]
         ]
     #janela
     window = sg.Window("adicionar ao Estoque",layout)
 
     while True:
-        button,values = window.read()
+        event,values = window.read()
 
             
-        if button == 'Adicionar':
+        if event == 'Adicionar':
             try: 
                 Nome = values['add_item']
                 quantidadeIntra = values['add_quantidade']
@@ -178,7 +188,7 @@ def AdicionarItem():
                 print("Coloque os valores corretamente")
 
 
-        if button == 'Deletar':
+        if event == 'Deletar':
             if Nome:
                 y = values['-BOX-'][0]
                 x = (y[0])
@@ -194,13 +204,16 @@ def AdicionarItem():
 
 
                 
-        if sg.WIN_CLOSED or button == 'Sair':
+        if event == sg.WIN_CLOSED or event == 'Sair':
             window.close()
             break
 
-        if button == 'Voltar':
-            
+        if event == 'Voltar':
             window.close()
+            initi()
+            
+            
+            
         
 ####################################venda###################################################
 
@@ -216,7 +229,7 @@ def JanelaEdit():
         [sg.Button('Enviar')]
               ]
     window = sg.Window('Novo Preço',elayout)
-    button, values = window.read()
+    event, values = window.read()
     global edit
     edit = values['edit_item']
     window.close()
@@ -240,14 +253,14 @@ def JanelaVenda():
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
         sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
         [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text('        '),sg.Button('Editar'),sg.Button('Add estoque')],
-        [sg.Button('Sair')]
+        [sg.Button('Sair'),sg.Button('Voltar')]
     ]
 
     window = sg.Window('Controle de estoque',vlayout)
     while True:
-        button,values = window.read()
+        event,values = window.read()
 
-        if button == 'Consultar':
+        if event == 'Consultar':
             c = values['vender']
             Id = busca0(c)
             Nome = busca1(c)
@@ -258,29 +271,36 @@ def JanelaVenda():
             window.find_element('-BOX2-').Update(Quantidade)
             window.find_element('-BOX3-').Update(Preco)
         try:
-            if button == 'Realizar venda':
+            if event == 'Realizar venda':
                 if Nome:
+                    x = values['-BOX-'][0]
+                    y = (x[0])
                     Avenda()
                     QuantiTrat = int(Quanti)
-                    Quantidade = busca2(c)
+                    print(QuantiTrat)
+                    Quantidade = busca2_teste(y)
                     Vquantidade0 = (Quantidade[0])
                     Vquantidade = (Vquantidade0[0])
                     subtration = Vquantidade - QuantiTrat
                     q = subtration
-                    vender(q, c)
+                    h = y
+                    vender(q, h)
                     Quantidade = busca2(c)
                     window.find_element('-BOX2-').Update(Quantidade)
                     
-            if button == 'Add estoque':
+            if event == 'Add estoque':
                 if Nome:
-                    Avenda()
-                    QuantiTrat = int(Quanti)
-                    Quantidade = busca2(c)
-                    Vquantidade0 = (Quantidade[0])
-                    Vquantidade = (Vquantidade0[0])
-                    addition = Vquantidade + QuantiTrat
+                    x = values['-BOX-'][0]
+                    y = (x[0])
+                    Add_Quanti()
+                    AddQuantiTrat = int(AddQuanti)
+                    AddQuantidade = busca2_teste(y)
+                    Vquantidade1 = (AddQuantidade[0])
+                    Vquantidade2 = (Vquantidade1[0])
+                    addition = Vquantidade2 + AddQuantiTrat
                     q = addition
-                    vender(q, c)
+                    h = y
+                    add_estoque(q, h)
                     Quantidade = busca2(c)
                     window.find_element('-BOX2-').Update(Quantidade)
         except ValueError:
@@ -289,7 +309,7 @@ def JanelaVenda():
 
 
 
-        if button == 'Deletar':
+        if event == 'Deletar':
             if Nome:
                 y = values['-BOX-'][0]
                 x = (y[0])
@@ -303,14 +323,14 @@ def JanelaVenda():
                 window.find_element('-BOX2-').Update(Quantidade)
                 window.find_element('-BOX3-').Update(Preco)
         
-        if button == 'Editar':
+        if event == 'Editar':
             if Nome:
                 x = values['-BOX-'][0]
                 y = (x[0])
                 JanelaEdit()
                 p = edit
-                c = y
-                Editar(p, c)
+                h = y
+                Editar(p, h)
                 Preco = busca3(c)
                 window.find_element('-BOX3-').Update(Preco)
 
@@ -318,9 +338,12 @@ def JanelaVenda():
            
 
 
-        if sg.WIN_CLOSED or button == 'Sair':
+        if event == sg.WIN_CLOSED or event == 'Sair':
             window.close()
             break
+        if event == 'Voltar':
+            window.close()
+            initi()
         
 def Avenda():
     sg.change_look_and_feel('DarkGreen')
@@ -331,15 +354,33 @@ def Avenda():
         
         ]
     #janela
-    janela = sg.Window("Controle de estoque", tlayout)
+    window = sg.Window("Controle de estoque", tlayout)
 
 
-    button,values = janela.read()
+    event,values = window.read()
     global Quanti
     Quanti = values['InQuanti']
-    if button == 'Vender':
-        janela.close()
-    return Quanti
+    if event == 'Vender':
+        window.close()
+
+def Add_Quanti():
+    sg.change_look_and_feel('DarkGreen')
+    #layout
+    ylayout = [
+        [sg.Text('Digite a quantidade:',size=(15,0)),sg.Input(size=(20,0), key='Adicionar_Quanti')],
+        [sg.Button('Adicionar')]
+        
+        ]
+    #janela
+    window = sg.Window("Controle de estoque", ylayout)
+
+
+    event,values = window.read()
+    global AddQuanti
+    AddQuanti = values['Adicionar_Quanti']
+    if event == 'Adicionar':
+        window.close()
+    
 #########################################filtragem##############################################
 def Filtrar():
     with open("logo.ico", "rb") as f:
@@ -365,16 +406,16 @@ def Filtrar():
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
         sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
         [sg.Button('Deletar')],
-        [sg.Button('Sair')]
+        [sg.Button('Sair'),sg.Button('Voltar')]
         ]
     #janela
     window = sg.Window("adicionar ao Estoque",layout)
 
     while True:
-        button,values = window.read()
+        event,values = window.read()
 
         
-        if button == 'Consultar':
+        if event == 'Consultar':
             f = values['fil_item']
             Id = filtrar2(f)
             Nome = filtrar(f)
@@ -391,7 +432,7 @@ def Filtrar():
 
 
 
-        if button == 'Deletar':
+        if event == 'Deletar':
             if Nome:
                 y = values['-BOX-'][0]
                 x = (y[0])
@@ -406,42 +447,44 @@ def Filtrar():
                 window.find_element('-BOX3-').Update(Preco)
 
                 
-        if sg.WIN_CLOSED or button == 'Sair':
+        if event == sg.WIN_CLOSED or event == 'Sair':
             window.close()
             break
 
-        if button == 'Voltar':
-            
+        if event == 'Voltar':
             window.close()
+            initi()
 
 ########################################################################################
-with open("logo.ico", "rb") as f:
-    my_icon = base64.b64encode(f.read())
-    sg.set_options(icon=my_icon)
+def initi():
+    with open("logo.ico", "rb") as f:
+        my_icon = base64.b64encode(f.read())
+        sg.set_options(icon=my_icon)
 
 
 
-sg.change_look_and_feel('DarkGreen')
+    sg.change_look_and_feel('DarkGreen')
 
-ilayout = [
-    [sg.Text('Olá seja Bem-vindo, Oque deseja fazer?')],
-    [sg.Button('Adicionar ao Estoque')],
-    [sg.Button('Realizar uma venda')],
-    [sg.Button('Fazer uma filtragem')],
-    [sg.Button('Sair')]
-]
+    ilayout = [
+        [sg.Text('Olá seja Bem-vindo, Oque deseja fazer?')],
+        [sg.Button('Adicionar ao Estoque')],
+        [sg.Button('Realizar uma venda')],
+        [sg.Button('Fazer uma filtragem')],
+        [sg.Button('Sair')]
+    ]
 
-window = sg.Window('Controle de estoque',ilayout)
+    window = sg.Window('Controle de estoque',ilayout)
 
-button, values = window.read()
-if button == 'Adicionar ao Estoque':
-    window.close()
-    AdicionarItem()
-if button == 'Realizar uma venda':
-    window.close()
-    JanelaVenda()
-if button == 'Fazer uma filtragem':
-    window.close()
-    Filtrar()
-if button == 'Sair':
-    window.close()
+    button, values = window.read()
+    if button == 'Adicionar ao Estoque':
+        window.close()
+        AdicionarItem()
+    if button == 'Realizar uma venda':
+        window.close()
+        JanelaVenda()
+    if button == 'Fazer uma filtragem':
+        window.close()
+        Filtrar()
+    if button == 'Sair':
+        window.close()
+initi()
