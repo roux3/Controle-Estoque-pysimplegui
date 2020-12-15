@@ -68,6 +68,10 @@ def Editar(p, h):
     cursor.execute('''update produtos set Preco =? where Nome=?''', (p, h))
     dbestoque.commit()
 
+def EditarID(p, h):
+    cursor.execute('''update produtos set Id =? where Nome=?''', (p, h))
+    dbestoque.commit()
+
 
 
 def busca0(c):
@@ -252,7 +256,7 @@ def JanelaVenda():
         sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
         sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
-        [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text('        '),sg.Button('Editar'),sg.Button('Add estoque')],
+        [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text('        '),sg.Button('Editar'),sg.Button('Add estoque'),sg.Button('Identifição')],
         [sg.Button('Sair'),sg.Button('Voltar')]
     ]
 
@@ -333,6 +337,17 @@ def JanelaVenda():
                 Editar(p, h)
                 Preco = busca3(c)
                 window.find_element('-BOX3-').Update(Preco)
+
+        if event == 'Identifição':
+            if Nome:
+                x = values['-BOX-'][0]
+                y = (x[0])
+                JanelaEdit()
+                p = edit
+                h = y
+                EditarID(p, h)
+                Id = busca0(c)
+                window.find_element('-BOX0-').Update(Id)
 
         
            
