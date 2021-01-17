@@ -1,6 +1,9 @@
 import PySimpleGUI as sg 
 import base64
 import sqlite3
+import tkinter as tk
+
+
 
 dbestoque = sqlite3.connect('Estoque.db')
 
@@ -10,14 +13,15 @@ dbestoque.execute(''' CREATE TABLE IF NOT EXISTS produtos(
                     Nome TEXT NOT NULL,
                     Quantidade INTEGER NOT NULL,
                     Preco FLOAT NOT NULL,
-                    Id TEXT NOT NULL
+                    Id TEXT NOT NULL,
+                    Classe TEXT NOT NULL
                     )''')
 
 
 dbestoque.commit()
 
-def escreve(Nome, Quantidade, Preco, Id):
-    cursor.execute(''' INSERT INTO produtos (Nome, Quantidade, Preco, Id) VALUES(?, ?, ?, ?)''', (Nome, Quantidade, Preco, Id))
+def escreve(Nome, Quantidade, Preco, Id, Classe):
+    cursor.execute(''' INSERT INTO produtos (Nome, Quantidade, Preco, Id, Classe) VALUES(?, ?, ?, ?, ?)''', (Nome, Quantidade, Preco, Id, Classe))
     dbestoque.commit()
 
 def delete(x):
@@ -55,6 +59,15 @@ def read_task3():
     dbestoque.commit()
     return data3
 
+def read_task4():
+    cursor = dbestoque.cursor()
+    cursor.execute('''SELECT Classe from produtos''')
+    data3 = cursor.fetchall()
+    dbestoque.commit()
+    return data3
+
+
+
 
 def vender(q, h):
     cursor.execute('''update produtos set Quantidade =? where Nome= ?''', (q,h,))
@@ -70,6 +83,10 @@ def Editar(p, h):
 
 def EditarID(p, h):
     cursor.execute('''update produtos set Id =? where Nome=?''', (p, h))
+    dbestoque.commit()
+
+def classificacao(w, h):
+    cursor.execute('''update produtos set Classe =? where Nome=?''', (w, h))
     dbestoque.commit()
 
 
@@ -105,25 +122,26 @@ def busca3(c):
     return resultado
 
 def filtrar(f):
-    cursor.execute('''SELECT Nome from produtos where Quantidade <= ?''',(f,))
+    cursor.execute('''SELECT Nome from produtos where Classe= ? and Quantidade <= 2''',(f,))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
 def filtrar2(f):
-    cursor.execute('''SELECT Id from produtos where Quantidade <= ?''',(f,))
+    cursor.execute('''SELECT Id from produtos where Classe= ? and Quantidade <= 2''',(f,))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
 def filtrar3(f):
-    cursor.execute('''SELECT Quantidade from produtos where Quantidade <= ?''',(f,))
+    cursor.execute('''SELECT Quantidade from produtos where Classe= ? and Quantidade <= 2''',(f,))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
 def filtrar4(f):
-    cursor.execute('''SELECT Preco from produtos where Quantidade <= ?''',(f,))
+    cursor.execute('''SELECT Preco from produtos where Classe= ? and Quantidade <= 2''',(f,))
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
+
 
     
 ##############################################main############################################
@@ -144,19 +162,22 @@ def AdicionarItem():
     Quantidade = read_task1()
     Preco = read_task2()
     Id = read_task3()
+    Classe = read_task4()
     
     #layout
     layout = [
-        [sg.Text('Digite o nome do item:',size=(15,0)),sg.Input(do_not_clear=False, size=(20,0),key='add_item')],
-        [sg.Text('A quantidade:'), sg.Text("      "),sg.Input(do_not_clear=False, size=(20,0),key='add_quantidade')],
-        [sg.Text('Digite o preço do item:',size=(15,0)),sg.Input(do_not_clear=False,size=(20,0),key='add_preco')],
-        [sg.Text('Digite o codigo de ID',size=(15,0)),sg.Input(do_not_clear=False,size=(20,0),key='Cod_id')],
+        [sg.Text('Digite o nome do item:',size=(17,0)),sg.Input(do_not_clear=False, size=(20,0),key='add_item')],
+        [sg.Text('A quantidade:',size=(17,0)),sg.Input(do_not_clear=False, size=(20,0),key='add_quantidade')],
+        [sg.Text('Digite o preço do item:',size=(17,0)),sg.Input(do_not_clear=False,size=(20,0),key='add_preco')],
+        [sg.Text('Digite o codigo de ID:',size=(17,0)),sg.Input(do_not_clear=False,size=(20,0),key='Cod_id')],
+        [sg.Text('Selecione a categoria:',size=(17,0)),sg.InputCombo(('Circuito','Transistor'),size=(20,0),key='combo')],
         [sg.Button('Adicionar')], 
-        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço')],
+        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço'),sg.Text('          '), sg.Text('Classe')],
         [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
         sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
-        sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
+        sg.Listbox(Preco, size=(10, 10), key='-BOX3-'),
+        sg.Listbox(Classe, size=(10, 10), key='-BOX4-')],
         [sg.Button('Deletar'),sg.Button('Voltar')],
         [sg.Button('Sair')]
         ]
@@ -173,20 +194,23 @@ def AdicionarItem():
                 quantidadeIntra = values['add_quantidade']
                 precoIntra = values['add_preco']
                 Id = values['Cod_id']
+                Classe = values['combo']
             
                 Quantidade = int(quantidadeIntra)
                 Preco = float(precoIntra)
 
                 if Nome != '':
-                    escreve(Nome, Quantidade, Preco, Id)
+                    escreve(Nome, Quantidade, Preco, Id, Classe)
                 Nome = read_task()
                 Quantidade = read_task1()
                 Preco = read_task2()
                 Id = read_task3()
+                Classe = read_task4()
                 window.find_element('-BOX-').Update(Nome)
                 window.find_element('-BOX2-').Update(Quantidade)
                 window.find_element('-BOX3-').Update(Preco)
                 window.find_element('-BOX0-').Update(Id)
+                window.find_element('-BOX4-').Update(Classe)
 
             except ValueError as erro:
                 print("Coloque os valores corretamente")
@@ -201,10 +225,12 @@ def AdicionarItem():
                 Quantidade = read_task1()
                 Preco = read_task2()
                 Id = read_task3()
+                Classe = read_task4()
                 window.find_element('-BOX-').Update(Nome)
                 window.find_element('-BOX2-').Update(Quantidade)
                 window.find_element('-BOX3-').Update(Preco)
                 window.find_element('-BOX0-').Update(Id)
+                window.find_element('-BOX4-').Update(Classe)
 
 
                 
@@ -397,6 +423,8 @@ def Add_Quanti():
         window.close()
     
 #########################################filtragem##############################################
+
+
 def Filtrar():
     with open("logo.ico", "rb") as f:
         my_icon = base64.b64encode(f.read())
@@ -413,7 +441,7 @@ def Filtrar():
     
     #layout
     layout = [
-        [sg.Text('Digite a quantidade que deseja filtrar:',size=(15,0)),sg.Input(do_not_clear=False, size=(20,0),key='fil_item')],
+        [sg.Text('Selecione a classe que deseja ver:',size=(15,0)),sg.InputCombo(('Circuito','Transistor'),size=(20,0),key='combo')],
         [sg.Button('Consultar')], 
         [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço')],
         [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
@@ -423,6 +451,7 @@ def Filtrar():
         [sg.Button('Deletar')],
         [sg.Button('Sair'),sg.Button('Voltar')]
         ]
+        
     #janela
     window = sg.Window("adicionar ao Estoque",layout)
 
@@ -431,11 +460,13 @@ def Filtrar():
 
         
         if event == 'Consultar':
-            f = values['fil_item']
+            f = values['combo']
             Id = filtrar2(f)
             Nome = filtrar(f)
             Quantidade = filtrar3(f)
             Preco = filtrar4(f)
+            
+            
             window.find_element('-BOX-').Update(Nome)
             window.find_element('-BOX0-').Update(Id)
             window.find_element('-BOX2-').Update(Quantidade)
@@ -470,6 +501,50 @@ def Filtrar():
             window.close()
             initi()
 
+########################################################################################################################################
+########################################################################################################################################
+########################################################################################################################################
+def manutencao():
+    Nome = read_task()
+    Quantidade = read_task1()
+    Preco = read_task2()
+    Id = read_task3()
+    Classe = read_task4()
+    
+    #layout
+    layout = [
+        [sg.Text('Selecione a categoria:',size=(17,0)),sg.InputCombo(('Circuito','Transistor'),size=(20,0),key='combo')],
+        [sg.Button('Atualizar')], 
+        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço'),sg.Text('          '), sg.Text('Classe')],
+        [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
+        sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
+        sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
+        sg.Listbox(Preco, size=(10, 10), key='-BOX3-'),
+        sg.Listbox(Classe, size=(10, 10), key='-BOX4-')],
+        [sg.Button('Deletar'),sg.Button('Voltar')],
+        [sg.Button('Sair')]
+        ]
+    #janela
+    window = sg.Window("adicionar ao Estoque",layout)
+
+    while True:
+        event, values = window.read()
+        if event == 'Atualizar':
+            if Nome:
+                w = values['combo']
+                x = values['-BOX-'][0]
+                h = (x[0])
+                classificacao(w, h)
+                Classe = read_task4()
+                window.find_element('-BOX4-').Update(Classe)     
+
+        if event == sg.WIN_CLOSED or event == 'Sair':
+            window.close()
+            break   
+
+
+
+
 ########################################################################################
 def initi():
     with open("logo.ico", "rb") as f:
@@ -485,6 +560,7 @@ def initi():
         [sg.Button('Adicionar ao Estoque')],
         [sg.Button('Realizar uma venda')],
         [sg.Button('Fazer uma filtragem')],
+        [sg.Button('⚠so modificar⚠')],
         [sg.Button('Sair')]
     ]
 
@@ -500,6 +576,9 @@ def initi():
     if button == 'Fazer uma filtragem':
         window.close()
         Filtrar()
+    if button == '⚠so modificar⚠':
+        window.close()
+        manutencao()
     if button == 'Sair':
         window.close()
 initi()
