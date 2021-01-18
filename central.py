@@ -439,15 +439,29 @@ def Filtrar():
     Preco = ''
     Id = ''
     
+          
+    cols = 4
+    rows = 100
+    col_width = 22
+    
+    
+    all_listbox = [[sg.Listbox(Nome, size=(15, rows), pad=(0, 0),
+    no_scrollbar=True, enable_events=True, key=f'listbox {i}',
+    select_mode=sg.LISTBOX_SELECT_MODE_SINGLE) for i in range(cols)]]
+
+
+
     #layout
     layout = [
         [sg.Text('Selecione a classe que deseja ver:',size=(15,0)),sg.InputCombo(('Circuito','Transistor'),size=(20,0),key='combo')],
         [sg.Button('Consultar')], 
-        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço')],
-        [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
-        sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
-        sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
-        sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
+         [sg.Text('Id'.center(col_width), pad=(0, 0)),
+          sg.Text('Nome'.center(col_width), pad=(0, 0)),
+          sg.Text('Quantidade'.center(col_width), pad=(0, 0)),
+          sg.Text('Preço'.center(col_width), pad=(0, 0))],
+        [sg.Column(all_listbox, size=(440, 100), pad=(0, 0), scrollable=True,
+         vertical_scroll_only=True)],
+
         [sg.Button('Deletar')],
         [sg.Button('Sair'),sg.Button('Voltar')]
         ]
@@ -455,8 +469,17 @@ def Filtrar():
     #janela
     window = sg.Window("adicionar ao Estoque",layout)
 
+
+
     while True:
         event,values = window.read()
+
+        if event.startswith('listbox'):
+            row = window[event].get_indexes()[0]
+            user_event = False
+            for i in range(cols):
+                window[f'listbox {i}'].set_value([])
+                window[f'listbox {i}'].Widget.selection_set(row)
 
         
         if event == 'Consultar':
@@ -467,31 +490,31 @@ def Filtrar():
             Preco = filtrar4(f)
             
             
-            window.find_element('-BOX-').Update(Nome)
-            window.find_element('-BOX0-').Update(Id)
-            window.find_element('-BOX2-').Update(Quantidade)
-            window.find_element('-BOX3-').Update(Preco)
+            window.find_element(f'listbox {1}').Update(Nome)
+            window.find_element(f'listbox {0}').Update(Id)
+            window.find_element(f'listbox {2}').Update(Quantidade)
+            window.find_element(f'listbox {3}').Update(Preco)
             
 
 
 
 
 
-
+    
         if event == 'Deletar':
             if Nome:
-                y = values['-BOX-'][0]
+                y = values[f'listbox {1}'][0]
                 x = (y[0])
                 delete(x)
-                Id = busca0(c)
-                Nome = busca1(c)
-                Quantidade = busca2(c)
-                Preco = busca3(c)
-                window.find_element('-BOX0-').Update(Id)
-                window.find_element('-BOX-').Update(Nome)
-                window.find_element('-BOX2-').Update(Quantidade)
-                window.find_element('-BOX3-').Update(Preco)
-
+                Id = filtrar2(f)
+                Nome = filtrar(f)
+                Quantidade = filtrar3(f)
+                Preco = filtrar4(f)
+                window.find_element(f'listbox {1}').Update(Nome)
+                window.find_element(f'listbox {0}').Update(Id)
+                window.find_element(f'listbox {2}').Update(Quantidade)
+                window.find_element(f'listbox {3}').Update(Preco)
+        
                 
         if event == sg.WIN_CLOSED or event == 'Sair':
             window.close()
