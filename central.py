@@ -170,7 +170,7 @@ def AdicionarItem():
         [sg.Text('A quantidade:',size=(17,0)),sg.Input(do_not_clear=False, size=(20,0),key='add_quantidade')],
         [sg.Text('Digite o preço do item:',size=(17,0)),sg.Input(do_not_clear=False,size=(20,0),key='add_preco')],
         [sg.Text('Digite o codigo de ID:',size=(17,0)),sg.Input(do_not_clear=False,size=(20,0),key='Cod_id')],
-        [sg.Text('Selecione a categoria:',size=(17,0)),sg.InputCombo(('Circuito','Transistor'),size=(20,0),key='combo')],
+        [sg.Text('Selecione a categoria:',size=(17,0)),sg.InputCombo(('Circuito','Transistor','Membrana'),size=(20,0),key='combo')],
         [sg.Button('Adicionar')], 
         [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço'),sg.Text('          '), sg.Text('Classe')],
         [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
@@ -453,13 +453,13 @@ def Filtrar():
 
     #layout
     layout = [
-        [sg.Text('Selecione a classe que deseja ver:',size=(15,0)),sg.InputCombo(('Circuito','Transistor'),size=(20,0),key='combo')],
+        [sg.Text('Selecione a classe que deseja ver:',size=(15,0)),sg.InputCombo(('Circuito','Transistor','Membrana'),size=(20,0),key='combo')],
         [sg.Button('Consultar')], 
          [sg.Text('Id'.center(col_width), pad=(0, 0)),
           sg.Text('Nome'.center(col_width), pad=(0, 0)),
           sg.Text('Quantidade'.center(col_width), pad=(0, 0)),
           sg.Text('Preço'.center(col_width), pad=(0, 0))],
-        [sg.Column(all_listbox, size=(440, 100), pad=(0, 0), scrollable=True,
+        [sg.Column(all_listbox, size=(440, 200), pad=(0, 0), scrollable=True,
          vertical_scroll_only=True)],
 
         [sg.Button('Deletar')],
@@ -525,50 +525,7 @@ def Filtrar():
             initi()
 
 ########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-def manutencao():
-    Nome = read_task()
-    Quantidade = read_task1()
-    Preco = read_task2()
-    Id = read_task3()
-    Classe = read_task4()
-    
-    #layout
-    layout = [
-        [sg.Text('Selecione a categoria:',size=(17,0)),sg.InputCombo(('Circuito','Transistor'),size=(20,0),key='combo')],
-        [sg.Button('Atualizar')], 
-        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço'),sg.Text('          '), sg.Text('Classe')],
-        [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
-        sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
-        sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
-        sg.Listbox(Preco, size=(10, 10), key='-BOX3-'),
-        sg.Listbox(Classe, size=(10, 10), key='-BOX4-')],
-        [sg.Button('Deletar'),sg.Button('Voltar')],
-        [sg.Button('Sair')]
-        ]
-    #janela
-    window = sg.Window("adicionar ao Estoque",layout)
 
-    while True:
-        event, values = window.read()
-        if event == 'Atualizar':
-            if Nome:
-                w = values['combo']
-                x = values['-BOX-'][0]
-                h = (x[0])
-                classificacao(w, h)
-                Classe = read_task4()
-                window.find_element('-BOX4-').Update(Classe)     
-
-        if event == sg.WIN_CLOSED or event == 'Sair':
-            window.close()
-            break   
-
-
-
-
-########################################################################################
 def initi():
     with open("logo.ico", "rb") as f:
         my_icon = base64.b64encode(f.read())
@@ -583,7 +540,6 @@ def initi():
         [sg.Button('Adicionar ao Estoque')],
         [sg.Button('Realizar uma venda')],
         [sg.Button('Fazer uma filtragem')],
-        [sg.Button('⚠so modificar⚠')],
         [sg.Button('Sair')]
     ]
 
@@ -599,9 +555,6 @@ def initi():
     if button == 'Fazer uma filtragem':
         window.close()
         Filtrar()
-    if button == '⚠so modificar⚠':
-        window.close()
-        manutencao()
     if button == 'Sair':
         window.close()
 initi()
