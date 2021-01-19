@@ -120,6 +120,11 @@ def busca3(c):
     resultado = cursor.fetchall()
     dbestoque.commit()
     return resultado
+def busca4(c):
+    cursor.execute('''SELECT Classe from produtos where Nome LIKE ?''',('%'+c+'%',))
+    resultado = cursor.fetchall()
+    dbestoque.commit()
+    return resultado
 
 def filtrar(f):
     cursor.execute('''SELECT Nome from produtos where Classe= ? and Quantidade <= 2''',(f,))
@@ -264,6 +269,10 @@ def JanelaEdit():
     edit = values['edit_item']
     window.close()
 
+    if event == sg.WIN_CLOSED:
+        window.close()
+        
+
         
 
 def JanelaVenda():
@@ -274,15 +283,17 @@ def JanelaVenda():
     Quantidade = ''
     Preco = ''
     Id = ''
+    Classe = ''
 
     vlayout = [
         [sg.Text('Digite o item que deseja fazer a venda'), sg.Input(do_not_clear=False, size=(20,0),key='vender')],
-        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço')],
+        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço'),sg.Text('            '),sg.Text('Classe')],
         [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
         sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
         sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
-        sg.Listbox(Preco, size=(10, 10), key='-BOX3-')],
-        [sg.Button('Consultar'), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text('        '),sg.Button('Editar'),sg.Button('Add estoque'),sg.Button('Identifição')],
+        sg.Listbox(Preco, size=(10, 10), key='-BOX3-'),
+        sg.Listbox(Classe, size=(10, 10), key='-BOX4-')],
+        [sg.Button('Consultar',size=(10, 1), font=(6)),sg.Text('     '), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text(' '),sg.Button('Editar'),sg.Button('Add estoque'),sg.Button('Identifição')],
         [sg.Button('Sair'),sg.Button('Voltar')]
     ]
 
@@ -296,11 +307,14 @@ def JanelaVenda():
             Nome = busca1(c)
             Quantidade = busca2(c)
             Preco = busca3(c)
+            Classe = busca4(c)
             window.find_element('-BOX0-').Update(Id)
             window.find_element('-BOX-').Update(Nome)
             window.find_element('-BOX2-').Update(Quantidade)
             window.find_element('-BOX3-').Update(Preco)
+            window.find_element('-BOX4-').Update(Classe)
         try:
+            
             if event == 'Realizar venda':
                 if Nome:
                     x = values['-BOX-'][0]
@@ -333,48 +347,60 @@ def JanelaVenda():
                     add_estoque(q, h)
                     Quantidade = busca2(c)
                     window.find_element('-BOX2-').Update(Quantidade)
-        except ValueError:
-            print('erro')
+        except (TypeError, IndexError, ValueError):
+            [sg.popup_ok('Selecione e Digite um valor valido', font = (12))]
+        
                 
 
 
+        try:
+            if event == 'Deletar':
+                if Nome:
+                    y = values['-BOX-'][0]
+                    x = (y[0])
+                    delete(x)
+                    Id = busca0(c)
+                    Nome = busca1(c)
+                    Quantidade = busca2(c)
+                    Preco = busca3(c)
+                    window.find_element('-BOX0-').Update(Id)
+                    window.find_element('-BOX-').Update(Nome)
+                    window.find_element('-BOX2-').Update(Quantidade)
+                    window.find_element('-BOX3-').Update(Preco)
+                    window.find_element('-BOX4-').Update(Classe)
+            
+            if event == 'Editar':
+                if Nome:
+                    x = values['-BOX-'][0]
+                    y = (x[0])
+                    JanelaEdit()
+                    p = edit
+                    h = y
+                    if not p:
+                        [sg.popup_ok('Digite algum valor', font=(9))]
+                        r = Preco[0]
+                        p = r[0]
+                    EditarID(p, h)
+                    Editar(p, h)
+                    Preco = busca3(c)
+                    window.find_element('-BOX3-').Update(Preco)
 
-        if event == 'Deletar':
-            if Nome:
-                y = values['-BOX-'][0]
-                x = (y[0])
-                delete(x)
-                Id = busca0(c)
-                Nome = busca1(c)
-                Quantidade = busca2(c)
-                Preco = busca3(c)
-                window.find_element('-BOX0-').Update(Id)
-                window.find_element('-BOX-').Update(Nome)
-                window.find_element('-BOX2-').Update(Quantidade)
-                window.find_element('-BOX3-').Update(Preco)
-        
-        if event == 'Editar':
-            if Nome:
-                x = values['-BOX-'][0]
-                y = (x[0])
-                JanelaEdit()
-                p = edit
-                h = y
-                Editar(p, h)
-                Preco = busca3(c)
-                window.find_element('-BOX3-').Update(Preco)
-
-        if event == 'Identifição':
-            if Nome:
-                x = values['-BOX-'][0]
-                y = (x[0])
-                JanelaEdit()
-                p = edit
-                h = y
-                EditarID(p, h)
-                Id = busca0(c)
-                window.find_element('-BOX0-').Update(Id)
-
+            if event == 'Identifição':
+                if Nome:
+                    x = values['-BOX-'][0]
+                    y = (x[0])
+                    JanelaEdit()
+                    p = edit
+                    h = y
+                    if not p:
+                        [sg.popup_ok('Digite algum valor', font=(9))]
+                        r = Id[0]
+                        p = r[0]
+                    EditarID(p, h)
+                    Id = busca0(c)
+                    window.find_element('-BOX0-').Update(Id)
+        except IndexError:
+            [sg.popup_ok('Selecione e Digite um valor valido', font = (12))]
         
            
 
@@ -421,6 +447,10 @@ def Add_Quanti():
     AddQuanti = values['Adicionar_Quanti']
     if event == 'Adicionar':
         window.close()
+    if event == sg.WIN_CLOSED:
+        window.close()
+        
+    
     
 #########################################filtragem##############################################
 
@@ -474,27 +504,33 @@ def Filtrar():
     while True:
         event,values = window.read()
 
-        if event.startswith('listbox'):
-            row = window[event].get_indexes()[0]
-            user_event = False
-            for i in range(cols):
-                window[f'listbox {i}'].set_value([])
-                window[f'listbox {i}'].Widget.selection_set(row)
+        try:
+            if event.startswith('listbox'):
+                row = window[event].get_indexes()[0]
+                user_event = False
+                for i in range(cols):
+                    window[f'listbox {i}'].set_value([])
+                    window[f'listbox {i}'].Widget.selection_set(row)
 
+            
+            if event == 'Consultar':
+                f = values['combo']
+                Id = filtrar2(f)
+                Nome = filtrar(f)
+                Quantidade = filtrar3(f)
+                Preco = filtrar4(f)
+                
+                
+                window.find_element(f'listbox {1}').Update(Nome)
+                window.find_element(f'listbox {0}').Update(Id)
+                window.find_element(f'listbox {2}').Update(Quantidade)
+                window.find_element(f'listbox {3}').Update(Preco)
+        except IndexError:
+            [
+            [sg.popup_ok('Selecione alguma classe')]
+            ]
         
-        if event == 'Consultar':
-            f = values['combo']
-            Id = filtrar2(f)
-            Nome = filtrar(f)
-            Quantidade = filtrar3(f)
-            Preco = filtrar4(f)
-            
-            
-            window.find_element(f'listbox {1}').Update(Nome)
-            window.find_element(f'listbox {0}').Update(Id)
-            window.find_element(f'listbox {2}').Update(Quantidade)
-            window.find_element(f'listbox {3}').Update(Preco)
-            
+      
 
 
 
@@ -540,7 +576,8 @@ def initi():
         [sg.Button('Adicionar ao Estoque')],
         [sg.Button('Realizar uma venda')],
         [sg.Button('Fazer uma filtragem')],
-        [sg.Button('Sair')]
+        [sg.Button('Sair')],
+        
     ]
 
     window = sg.Window('Controle de estoque',ilayout)
