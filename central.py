@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import base64
 import sqlite3
 import tkinter as tk
+import ctypes
 
 
 
@@ -171,20 +172,20 @@ def AdicionarItem():
     
     #layout
     layout = [
-        [sg.Text('Digite o nome do item:',size=(17,0)),sg.Input(do_not_clear=False, size=(20,0),key='add_item')],
-        [sg.Text('A quantidade:',size=(17,0)),sg.Input(do_not_clear=False, size=(20,0),key='add_quantidade')],
-        [sg.Text('Digite o preço do item:',size=(17,0)),sg.Input(do_not_clear=False,size=(20,0),key='add_preco')],
-        [sg.Text('Digite o codigo de ID:',size=(17,0)),sg.Input(do_not_clear=False,size=(20,0),key='Cod_id')],
-        [sg.Text('Selecione a categoria:',size=(17,0)),sg.InputCombo(('Circuito','Transistor','Membrana'),size=(20,0),key='combo')],
+        [sg.Text('Digite o nome do item:',size=(17,0)),sg.Input(do_not_clear=False, size=(25,0),key='add_item')],
+        [sg.Text('A quantidade:',size=(17,0)),sg.Input(do_not_clear=False, size=(25,0),key='add_quantidade')],
+        [sg.Text('Digite o preço do item:',size=(17,0)),sg.Input(do_not_clear=False,size=(25,0),key='add_preco')],
+        [sg.Text('Digite o codigo de ID:',size=(17,0)),sg.Input(do_not_clear=False,size=(25,0),key='Cod_id')],
+        [sg.Text('Selecione a categoria:',size=(17,0)),sg.InputCombo(('Circuito','Transistor','Membrana'),size=(25,0),key='combo')],
         [sg.Button('Adicionar')], 
-        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço'),sg.Text('          '), sg.Text('Classe')],
-        [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
-        sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
-        sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
-        sg.Listbox(Preco, size=(10, 10), key='-BOX3-'),
-        sg.Listbox(Classe, size=(10, 10), key='-BOX4-')],
-        [sg.Button('Deletar'),sg.Button('Voltar')],
-        [sg.Button('Sair')]
+        [sg.Text('ID',pad=((12, 200),12),font=('helvetica',12)), sg.Text('Produto',pad=((12, 195),12),font=('helvetica',12)) ,sg.Text('Quantidade',pad=((12, 35),12),font=('helvetica',12)), sg.Text('Preço',pad=((12, 40),12),font=('helvetica',12)), sg.Text('Classe',font=('helvetica',12))],
+        [sg.Listbox(Id, size=(5,15),font=('helvetica',11), key='-BOX0-'),
+        sg.Listbox(Nome, size=(50, 15),font=('Helvetica',11), key='-BOX-'),
+        sg.Listbox(Quantidade, size=(10, 15),font=('helvetica',11), key='-BOX2-'),
+        sg.Listbox(Preco, size=(10, 15),font=('helvetica',11), key='-BOX3-'),
+        sg.Listbox(Classe, size=(10, 15),font=('helvetica',11), key='-BOX4-')],
+        [sg.Button('Deletar', font=(10))],
+        [sg.Button('Sair',size=(10,2)),sg.Button('⬅ Voltar',font=(10))]
         ]
     #janela
     window = sg.Window("adicionar ao Estoque",layout)
@@ -243,7 +244,7 @@ def AdicionarItem():
             window.close()
             break
 
-        if event == 'Voltar':
+        if event == '⬅ Voltar':
             window.close()
             initi()
             
@@ -286,21 +287,22 @@ def JanelaVenda():
     Classe = ''
 
     vlayout = [
-        [sg.Text('Digite o item que deseja fazer a venda'), sg.Input(do_not_clear=False, size=(20,0),key='vender')],
-        [sg.Text('ID'),sg.Text('                      '),sg.Text('Produto'),sg.Text('                    '),sg.Text('Quantidade'),sg.Text('  '),sg.Text('Preço'),sg.Text('            '),sg.Text('Classe')],
-        [sg.Listbox(Id, size=(5,10), key='-BOX0-'),
-        sg.Listbox(Nome, size=(25, 10), key='-BOX-'),
-        sg.Listbox(Quantidade, size=(10, 10), key='-BOX2-'),
-        sg.Listbox(Preco, size=(10, 10), key='-BOX3-'),
-        sg.Listbox(Classe, size=(10, 10), key='-BOX4-')],
-        [sg.Button('Consultar',size=(10, 1), font=(6)),sg.Text('     '), sg.Button('Realizar venda'),sg.Button('Deletar'),sg.Text(' '),sg.Button('Editar'),sg.Button('Add estoque'),sg.Button('Identifição')],
-        [sg.Button('Sair'),sg.Button('Voltar')]
+        [sg.Text('Digite o item que deseja fazer a venda:'), sg.Input(do_not_clear=False, size=(20,1),key='vender')],
+        [sg.Text('ID',pad=((12,180),12)),sg.Text('Produto',pad=((12,180),12)),sg.Text('Quantidade',pad=((0,30),12)),sg.Text('Preço',pad=((0,35),12)),sg.Text('Classe')],
+        [sg.Listbox(Id, size=(5,14), key='-BOX0-', no_scrollbar=True),
+        sg.Listbox(Nome, size=(55, 14), key='-BOX-', no_scrollbar=True),
+        sg.Listbox(Quantidade, size=(10, 14), key='-BOX2-', no_scrollbar=True),
+        sg.Listbox(Preco, size=(10, 14), key='-BOX3-', no_scrollbar=True),
+        sg.Listbox(Classe, size=(10, 14), key='-BOX4-', no_scrollbar=True)],
+        [sg.Button('Consultar',size=(10, 1), font=(6),pad=((0,80),12)), sg.Button('Realizar venda'),sg.Button('Deletar',pad=((0,30),12)),sg.Button('Editar'),sg.Button('Add estoque'),sg.Button('Identifição')],
+        [sg.Button('Sair'),sg.Button('⬅ Voltar')]
     ]
 
     window = sg.Window('Controle de estoque',vlayout)
     while True:
         event,values = window.read()
-
+        
+        
         if event == 'Consultar':
             c = values['vender']
             Id = busca0(c)
@@ -408,7 +410,7 @@ def JanelaVenda():
         if event == sg.WIN_CLOSED or event == 'Sair':
             window.close()
             break
-        if event == 'Voltar':
+        if event == '⬅ Voltar':
             window.close()
             initi()
         
@@ -463,6 +465,17 @@ def Filtrar():
     #mudar tema
     sg.change_look_and_feel('DarkGreen')
 
+    def yscroll(self, event):   # tkinter code
+        if self.canvas.yview() == (0.0, 1.0):
+            return
+        if event.num == 5 or event.delta < 0:
+            self.canvas.yview_scroll(1, "unit")
+        elif event.num == 4 or event.delta > 0:
+            self.canvas.yview_scroll(-1, "unit")
+    
+    
+    
+    sg.TkScrollableFrame.yscroll = yscroll
 
     Nome = ''
     Quantidade = ''
@@ -471,11 +484,11 @@ def Filtrar():
     
           
     cols = 4
-    rows = 100
+    rows = 10
     col_width = 22
     
     
-    all_listbox = [[sg.Listbox(Nome, size=(15, rows), pad=(0, 0),
+    all_listbox = [[sg.Listbox(Nome,size=(15, rows), pad=(0, 0),
     no_scrollbar=True, enable_events=True, key=f'listbox {i}',
     select_mode=sg.LISTBOX_SELECT_MODE_SINGLE) for i in range(cols)]]
 
@@ -489,11 +502,11 @@ def Filtrar():
           sg.Text('Nome'.center(col_width), pad=(0, 0)),
           sg.Text('Quantidade'.center(col_width), pad=(0, 0)),
           sg.Text('Preço'.center(col_width), pad=(0, 0))],
-        [sg.Column(all_listbox, size=(440, 200), pad=(0, 0), scrollable=True,
-         vertical_scroll_only=True)],
-
+        [sg.Column(all_listbox, size=(440, 200), pad=(0, 0),scrollable=True,
+         vertical_scroll_only=True, key='Coluna')],
+        
         [sg.Button('Deletar')],
-        [sg.Button('Sair'),sg.Button('Voltar')]
+        [sg.Button('Sair'),sg.Button('⬅ Voltar')]
         ]
         
     #janela
@@ -509,22 +522,36 @@ def Filtrar():
                 row = window[event].get_indexes()[0]
                 user_event = False
                 for i in range(cols):
-                    window[f'listbox {i}'].set_value([])
-                    window[f'listbox {i}'].Widget.selection_set(row)
+                    listbox = window[f'listbox {i}']
+                    listbox.set_value([])
+                    listbox.Widget.selection_set(row)   # tkinter code
 
             
             if event == 'Consultar':
                 f = values['combo']
                 Id = filtrar2(f)
                 Nome = filtrar(f)
+                rows = len(Nome)
+                if not rows:
+                    sg.popup_ok('Não ha nenhum produto dessa classe', font=(6))
+                    rows = 10
                 Quantidade = filtrar3(f)
                 Preco = filtrar4(f)
                 
+                for i in range(cols):
+                    listbox = window[f'listbox {i}']
+                    listbox.Widget.configure(height=rows)  
                 
                 window.find_element(f'listbox {1}').Update(Nome)
                 window.find_element(f'listbox {0}').Update(Id)
                 window.find_element(f'listbox {2}').Update(Quantidade)
                 window.find_element(f'listbox {3}').Update(Preco)
+                window.refresh() 
+                window['Coluna'].contents_changed()
+                
+                
+                
+
         except IndexError:
             [
             [sg.popup_ok('Selecione alguma classe')]
@@ -556,7 +583,7 @@ def Filtrar():
             window.close()
             break
 
-        if event == 'Voltar':
+        if event == '⬅ Voltar':
             window.close()
             initi()
 
