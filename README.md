@@ -6,4 +6,4 @@ Segue abaixo o link para fazer o download do winrar onde esta o arquivo executav
 
 link-client: https://www.mediafire.com/file/zhtqrr2937et97m/estoqueJE-client.rar/file
 
-link-server: mediafire.com/file/ih49q3hexvvfoee/estoqueJE-server.rar/file
+link-server: https://www.mediafire.com/file/ih49q3hexvvfoee/estoqueJE-server.rar/file
